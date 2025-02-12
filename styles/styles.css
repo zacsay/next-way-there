@@ -7,7 +7,7 @@
 }
 
 .minor-notice>p::before {
-    content: "\1F6C8\a0"
+    content: "\1F6C8\a0";
 }
 
 .minor-notice>p {
@@ -44,5 +44,21 @@
 }
 
 .major-notice>p {
+    margin: 0;
+}
+
+.success-notice {
+    background-color: greenyellow;
+    color: black;
+    border-radius: 6px;
+    padding: 1ex 1ch;
+    margin-bottom: 1ex;
+}
+
+.success-notice>p::before {
+    content: "\2713\a0";
+}
+
+.success-notice>p {
     margin: 0;
 }
