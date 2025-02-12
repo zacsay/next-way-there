@@ -1,0 +1,6 @@
+{
+    "friendlyName": "Victoria",
+    "gtfsSource": "https://opendata.transport.vic.gov.au/dataset/gtfs-schedule/resource/3c2ba3c5-c05b-4d71-aa50-a2a97bde258d",
+    "updateFrequency": 7,
+    "preprocessing": 1
+}
