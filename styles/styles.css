@@ -1,0 +1,48 @@
+.minor-notice {
+    background-color: lightskyblue;
+    color: black;
+    border-radius: 6px;
+    padding: 1ex 1ch;
+    margin-bottom: 1ex;
+}
+
+.minor-notice>p::before {
+    content: "\1F6C8\a0"
+}
+
+.minor-notice>p {
+    margin: 0;
+}
+
+.medium-notice {
+    background-color: orange;
+    color: black;
+    border-radius: 6px;
+    padding: 1ex 1ch;
+    margin-bottom: 1ex;
+}
+
+.medium-notice>p::before {
+    content: "\26A0\a0";
+}
+
+.medium-notice>p {
+    margin: 0;
+}
+
+.major-notice {
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    padding: 1ex 1ch;
+    margin-bottom: 1ex;
+}
+
+.major-notice>p::before {
+    content: "\26A0\a0";
+}
+
+.major-notice>p {
+    margin: 0;
+}
