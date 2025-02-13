@@ -1,22 +1,38 @@
-const knownRegions = ["victoria"];
+const knownRegions = ["victorian"];
 
 function loadRegions(silent = false) {
+    let complete = 0;
+
+    function responseHandler(region, request) {
+        complete++;
+        if (request.status !== 200) { // TODO: handle network errors; stop success message from appearing when all downloads fail
+            const errorBox = document.createElement("div");
+            const errorText = document.createTextNode(`Unable to retrieve region metadata for ${region} (${complete}/${knownRegions.length}). The server responded with: ${request.status} ${request.statusText}.`);
+            const errorP = document.createElement("p");
+            errorP.appendChild(errorText);
+            errorBox.setAttribute("class", "major-notice");
+            errorBox.appendChild(errorP);
+            document.getElementById("notices").appendChild(errorBox);
+            console.error(request);
+        } else {
+
+            regionConfigurations[region] = JSON.parse(request.responseText);
+
+        }
+    }
+
     let regionConfigurations = {};
+
     if (!silent) {
         document.getElementById("downloading-updates").removeAttribute("hidden");
         document.body.style.cursor = "wait";
     }
     knownRegions.forEach(region => {
         const request = new XMLHttpRequest();
-        request.open("GET", `https://zacsay.github.io/next-way-there/data/regions/${region}.json`, false);
+        request.addEventListener("load", () => responseHandler(region, request));
+        request.open("GET", `https://zacsay.github.io/next-way-there/data/regions/${region}.json`);
         request.setRequestHeader("Accept", "application/json");
         request.send();
-        if (request.status !== 200) {
-            alert(`Unable to retrieve region metadata for ${region}. The server responded with: ${request.status} ${request.statusText}.`);
-            console.error(request);
-        } else {
-            regionConfigurations[region] = JSON.parse(request.responseText);
-        }
     });
     if (!silent) {
         document.getElementById("downloading-updates").setAttribute("hidden", "");
