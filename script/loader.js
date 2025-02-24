@@ -6,13 +6,7 @@ function loadRegions(silent = false) {
     function responseHandler(region, request) {
         complete++;
         if (request.status !== 200) { // TODO: handle network errors; stop success message from appearing when all downloads fail
-            const errorBox = document.createElement("div");
-            const errorText = document.createTextNode(`Unable to retrieve region metadata for ${region} (${complete}/${knownRegions.length}). The server responded with: ${request.status} ${request.statusText}.`);
-            const errorP = document.createElement("p");
-            errorP.appendChild(errorText);
-            errorBox.setAttribute("class", "major-notice");
-            errorBox.appendChild(errorP);
-            document.getElementById("notices").appendChild(errorBox);
+            createNotice("major-notice", `Unable to retrieve region metadata for ${region} (${complete}/${knownRegions.length}). The server responded with: ${request.status}.`)
             console.error(request);
         } else {
 
