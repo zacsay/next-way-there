@@ -2,16 +2,23 @@ const knownRegions = ["victorian"];
 
 function loadRegions(silent = false) {
     let complete = 0;
+    let success = false;
 
     function responseHandler(region, request) {
         complete++;
-        if (request.status !== 200) { // TODO: handle network errors; stop success message from appearing when all downloads fail
-            createNotice("major-notice", `Unable to retrieve region metadata for ${region} (${complete}/${knownRegions.length}). The server responded with: ${request.status}.`)
+        if (request.status !== 200) { // TODO: handle network errors
+            createNotice("major-notice", `Unable to retrieve region metadata for ${region} (${complete}/${knownRegions.length}). The server responded with: ${request.status}.`);
             console.error(request);
         } else {
-
+            success = true;
             regionConfigurations[region] = JSON.parse(request.responseText);
-
+        }
+        if (!silent && complete === knownRegions.length) {
+            document.getElementById("downloading-updates").setAttribute("hidden", "");
+            document.body.style.cursor = "auto";
+            if (success) {
+                document.getElementById("updates-downloaded").removeAttribute("hidden");
+            }
         }
     }
 
@@ -21,6 +28,7 @@ function loadRegions(silent = false) {
         document.getElementById("downloading-updates").removeAttribute("hidden");
         document.body.style.cursor = "wait";
     }
+
     knownRegions.forEach(region => {
         const request = new XMLHttpRequest();
         request.addEventListener("load", () => responseHandler(region, request));
@@ -28,11 +36,6 @@ function loadRegions(silent = false) {
         request.setRequestHeader("Accept", "application/json");
         request.send();
     });
-    if (!silent) {
-        document.getElementById("downloading-updates").setAttribute("hidden", "");
-        document.body.style.cursor = "auto";
-        document.getElementById("updates-downloaded").removeAttribute("hidden");
-    }
     document.getElementById("missing-all-data").setAttribute("hidden", "");
     document.getElementById("missing-some-data").setAttribute("hidden", "");
     return regionConfigurations;
