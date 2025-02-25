@@ -1,6 +1,6 @@
-const knownRegions = ["victorian"];
+const knownRegions = ["victoria"];
 
-function loadRegions(silent = false) {
+function loadRegions(silent = false, save = true) {
     let complete = 0;
     let success = false;
 
@@ -20,6 +20,9 @@ function loadRegions(silent = false) {
                 document.getElementById("updates-downloaded").removeAttribute("hidden");
             }
         }
+        if (save && complete === knownRegions.length) {
+            localStorage.setItem("nwtRegionConfigurations", JSON.stringify(regionConfigurations));
+        }
     }
 
     let regionConfigurations = {};
@@ -38,11 +41,6 @@ function loadRegions(silent = false) {
     });
     document.getElementById("missing-all-data").setAttribute("hidden", "");
     document.getElementById("missing-some-data").setAttribute("hidden", "");
-    return regionConfigurations;
-}
-
-function saveRegions() {
-    localStorage.setItem("nwtRegionConfigurations", JSON.stringify(loadRegions()));
 }
 
 var regionConfigurations = JSON.parse(localStorage.getItem("nwtRegionConfigurations"));
