@@ -1,4 +1,5 @@
 var noticeId = 0;
+
 function createNotice(type, message, dismissable = true, dismissText = "Dismiss", otherButton = null, otherButtonAction = "") {
     /* Create a new notice.
     - type: the type of notice to create, one of the CSS notice classes
@@ -33,6 +34,7 @@ function createNotice(type, message, dismissable = true, dismissText = "Dismiss"
     document.getElementById("notices").appendChild(noticeBox);
     noticeId++;
 }
+
 function dismissNotice(notice) {
     document.getElementById(notice).setAttribute("hidden", "");
 }

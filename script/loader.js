@@ -3,6 +3,7 @@ const knownRegions = ["victoria"];
 function loadRegions(silent = false, save = true) {
     let complete = 0;
     let success = false;
+    let regionConfigurations = {};
 
     function responseHandler(region, request) {
         complete++;
@@ -24,8 +25,6 @@ function loadRegions(silent = false, save = true) {
             localStorage.setItem("nwtRegionConfigurations", JSON.stringify(regionConfigurations));
         }
     }
-
-    let regionConfigurations = {};
 
     if (!silent) {
         document.getElementById("downloading-updates").removeAttribute("hidden");
