@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="styles/styles.css">
   <script async src="script/loader.js"></script>
   <script async src="script/notices.js"></script>
+  <script async src="script/regionSelection.js"></script>
 </head>
 
 <body>
@@ -42,9 +43,10 @@
   </div>
   <div id="region-selector">
     <label for="region-dropdown">Please select your region:</p>
-    <select id="region-dropdown">
-      <option value="custom">Custom</option>
-    </select>
+      <select id="region-dropdown" onchange="updateRegion()">
+        <option value="null" selected disabled>Please select a region.</option>
+        <option value="custom">Custom...</option>
+      </select>
   </div>
 </body>
 

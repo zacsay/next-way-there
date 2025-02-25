@@ -47,6 +47,7 @@ function loadRegions(silent = false, save = true) {
 
 function updateRegionDropdown() {
     const regionDropdown = document.getElementById("region-dropdown");
+    const lastUsedRegion = localStorage.getItem("nwtLastUsedRegion");
 
     for (let i = 0; i < Object.values(regionConfigurations).length; i++) {
         const region = Object.values(regionConfigurations)[i];
@@ -55,6 +56,9 @@ function updateRegionDropdown() {
         const newOptionText = document.createTextNode(region.friendlyName);
         newOption.setAttribute("value", regionName);
         newOption.appendChild(newOptionText);
+        if (lastUsedRegion === regionName) {
+            newOption.setAttribute("selected", "");
+        }
         regionDropdown.appendChild(newOption);
     }
 }
