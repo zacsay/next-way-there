@@ -1,5 +1,7 @@
 const knownRegions = ["victoria"];
 
+var regionConfigurations = JSON.parse(localStorage.getItem("nwtRegionConfigurations"));
+
 function loadRegions(silent = false, save = true) {
     let complete = 0;
     let success = false;
@@ -23,6 +25,7 @@ function loadRegions(silent = false, save = true) {
         }
         if (save && complete === knownRegions.length) {
             localStorage.setItem("nwtRegionConfigurations", JSON.stringify(regionConfigurations));
+            updateRegionDropdown();
         }
     }
 
@@ -42,10 +45,24 @@ function loadRegions(silent = false, save = true) {
     document.getElementById("missing-some-data").setAttribute("hidden", "");
 }
 
-var regionConfigurations = JSON.parse(localStorage.getItem("nwtRegionConfigurations"));
+function updateRegionDropdown() {
+    const regionDropdown = document.getElementById("region-dropdown");
+
+    for (let i = 0; i < Object.values(regionConfigurations).length; i++) {
+        const region = Object.values(regionConfigurations)[i];
+        const regionName = Object.keys(regionConfigurations)[i];
+        const newOption = document.createElement("option");
+        const newOptionText = document.createTextNode(region.friendlyName);
+        newOption.setAttribute("value", regionName);
+        newOption.appendChild(newOptionText);
+        regionDropdown.appendChild(newOption);
+    }
+}
 
 if (!regionConfigurations) {
     document.getElementById("missing-all-data").removeAttribute("hidden");
 } else if (Object.keys(regionConfigurations).length !== knownRegions.length) {
     document.getElementById("missing-some-data").removeAttribute("hidden");
 }
+
+updateRegionDropdown();
