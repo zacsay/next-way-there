@@ -9,7 +9,43 @@ async function saveToIndexedDB(feedDir, regionName) {
     request.onupgradeneeded = (event) => {
         db = event.target.result;
 
-        db.createObjectStore("agencies", { keyPath: "agency_id" });
+        const agencyOS = db.createObjectStore("agencies", { keyPath: "agency_id" });
+        const stopsOS = db.createObjectStore("stops", { keyPath: "stop_id" });
+        const routesOS = db.createObjectStore("routes", { keyPath: "route_id" });
+        const tripsOS = db.createObjectStore("trips", { keyPath: "trip_id" });
+        const stopTimesOS = db.createObjectStore("stop_times", { keyPath: ["trip_id", "stop_sequence"] });
+        const calendarOS = db.createObjectStore("calendar", { keyPath: "service_id" });
+        const calendarDatesOS = db.createObjectStore("calendar_dates", { keyPath: ["service_id", "date"] });
+
+        // Define indices for searching the database
+        stopsOS.createIndex("stop_code", "stop_code");
+        stopsOS.createIndex("stop_name", "stop_name");
+        stopsOS.createIndex("parent_station", "parent_station");
+
+        routesOS.createIndex("agency_id", "agency_id");
+        routesOS.createIndex("route_short_name", "route_short_name");
+        routesOS.createIndex("route_long_name", "route_long_name");
+        routesOS.createIndex("route_type", "route_type");
+
+        tripsOS.createIndex("route_id", "route_id");
+        tripsOS.createIndex("service_id", "service_id");
+        tripsOS.createIndex("direction_id", "direction_id");
+
+        stopTimesOS.createIndex("arrival_time", "arrival_time");
+        stopTimesOS.createIndex("departure_time", "departure_time");
+        stopTimesOS.createIndex("stop_id", "stop_id");
+        stopTimesOS.createIndex("pickup_type", "pickup_type");
+        stopTimesOS.createIndex("drop_off_type", "drop_off_type");
+
+        calendarOS.createIndex("monday", "monday");
+        calendarOS.createIndex("tuesday", "tuesday");
+        calendarOS.createIndex("wednesday", "wednesday");
+        calendarOS.createIndex("thursday", "thursday");
+        calendarOS.createIndex("friday", "friday");
+        calendarOS.createIndex("saturday", "saturday");
+        calendarOS.createIndex("sunday", "sunday");
+
+        calendarDatesOS.createIndex("date", "date");
     };
     request.onsuccess = (event) => {
         db = event.target.result;
@@ -80,9 +116,9 @@ async function saveToIndexedDB(feedDir, regionName) {
     if (fileHandles["stops.txt"] === undefined && fileHandles["locations.geojson"] === undefined) {
         throw new Error("GTFS feed is completely invalid: neither stops.txt nor locations.geojson exist");
     } else
-    if (fileHandles["stops.txt"] === undefined) {
-        throw new Error("GTFS feed is valid but not supported: stops.txt does not exist")
-    }
+        if (fileHandles["stops.txt"] === undefined) {
+            throw new Error("GTFS feed is valid but not supported: stops.txt does not exist");
+        }
 
-    console.log("Feed passed all validation checks")
+    console.log("Feed passed all validation checks");
 }
