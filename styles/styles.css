@@ -62,3 +62,11 @@
 .success-notice>p {
     margin: 0;
 }
+
+.success-text {
+    color: green;
+}
+
+.fail-text {
+    color: red;
+}
