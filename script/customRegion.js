@@ -34,5 +34,5 @@ function moveToIndexedDB() {
         return;
     }
 
-    saveToIndexedDB(selectedDir)
+    saveToIndexedDB(selectedDir, "custom")
 }
