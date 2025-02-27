@@ -61,6 +61,10 @@ function updateRegionDropdown() {
         }
         regionDropdown.appendChild(newOption);
     }
+    if (lastUsedRegion === "custom") {
+        document.getElementById("custom-region-option").setAttribute("selected", "");
+    }
+    updateRegion();
 }
 
 if (!regionConfigurations) {
