@@ -10,8 +10,8 @@
 
 <body>
     <h1>Using custom regions</h1>
-    <p>NextWayThere allows you to use custom regions, by loading GTFS files from your device. In <a href="https://caniuse.com/mdn-api_filesystem">browsers supporting the FileSystem API</a> (most modern browsers), you can select a directory which contains the required GTFS files. The feed must have already been extracted from the zip file. NextWayThere will then scan the directory for the required files to ensure that they all exist. It will only read files with recognised GTFS-like names in the selected directory. Files are not written to, and anything unrecognised is ignored.</p>
-    <p>If everything required is in place, the files will be loaded into the browser's storage, as with other GTFS feeds. You can delete the files from your computer once this has happened if you want to reduce data duplication.</p>
+    <p>NextWayThere allows you to use custom regions, by loading GTFS files from your device. The feed must have already been extracted from the zip file, and be contained within a single directory. NextWayThere will then scan the directory for the required files to ensure that they all exist. It will only read files with recognised GTFS-like names in the selected directory. Files are not written to, and anything unrecognised is ignored as far as possible (although may be copied on some browsers which do not fully support the File System API).</p>
+    <p>In browsers which fully support the File System API, files are only loaded into the browser's storage when everything required is in place. If the API is not supported, files are saved again in all cases in order to check that everything is available. You can delete the files from your computer once this has happened if you want to reduce data duplication.</p>
     <p>Currently, NextWayThere does not support combining files which are stored locally (although this feature is planned to exist in the future). If you want to combine files, you may wish to consider using a merge tool such as <a href="https://github.com/now8-org/gtfsmerge">this one</a>.</p>
 </body>
 </html>

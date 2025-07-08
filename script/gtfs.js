@@ -76,6 +76,8 @@ async function saveToIndexedDB(feedDir, regionName) {
                     const transaction = db.transaction([store], "readwrite");
                     const objectStore = transaction.objectStore(store);
 
+                    objectStore.clear()
+
                     for (const obj of parsed.data) {
                         objectStore.add(obj);
                     }

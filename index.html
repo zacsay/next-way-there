@@ -12,6 +12,7 @@
   <script defer src="./script/loader.js"></script>
   <script src="./script/customRegion.js"></script>
   <script src="./script/gtfs.js"></script>
+  <script defer src="./script/dynamicFeatures.js"></script>
 </head>
 
 <body>
@@ -54,7 +55,7 @@
   <div id="custom-region-options" hidden>
     <h2>Custom region options</h2>
     <p><a href="./help/custom-regions.html">Learn how to use custom regions</a></p>
-    <button onclick="selectCustomRegion()">Select directory with GTFS data</button><p id="custom-region-selection"></p>
+    <div id="custom-region-select-button-container"><button onclick="selectCustomRegion()">Select directory with GTFS data</button></div><p id="custom-region-selection"></p>
     <!-- Possible implementation for browsers not fully supporting File System API
     <label for="custom-gtfs-agency">Select agency file:</label>
     <input type="file" id="custom-gtfs-agency" /><br>
