@@ -48,18 +48,23 @@ function loadRegions(silent = false, save = true) {
 function updateRegionDropdown() {
     const regionDropdown = document.getElementById("region-dropdown");
     const lastUsedRegion = localStorage.getItem("nwtLastUsedRegion");
-
-    for (let i = 0; i < Object.values(regionConfigurations).length; i++) {
-        const region = Object.values(regionConfigurations)[i];
-        const regionName = Object.keys(regionConfigurations)[i];
-        const newOption = document.createElement("option");
-        const newOptionText = document.createTextNode(region.friendlyName);
-        newOption.setAttribute("value", regionName);
-        newOption.appendChild(newOptionText);
-        if (lastUsedRegion === regionName) {
-            newOption.setAttribute("selected", "");
+    try {
+        for (const [regionName, region] of Object.entries(regionConfigurations)) {
+            const newOption = document.createElement("option");
+            const newOptionText = document.createTextNode(region.friendlyName);
+            newOption.setAttribute("value", regionName);
+            newOption.appendChild(newOptionText);
+            if (lastUsedRegion === regionName) {
+                newOption.setAttribute("selected", "");
+            }
+            regionDropdown.appendChild(newOption);
         }
-        regionDropdown.appendChild(newOption);
+    } catch (error) {
+        if (error instanceof TypeError) {
+            // Known to be thrown when no region configurations available
+        } else {
+            throw new Error(error);
+        }
     }
     if (lastUsedRegion === "custom") {
         document.getElementById("custom-region-option").setAttribute("selected", "");
