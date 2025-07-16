@@ -1,3 +1,6 @@
+import { saveToIndexedDB } from "./gtfs.mjs";
+import { OPFSCleanUp } from "./preprocessors.mjs";
+
 const gtfsRequired = [
     "agency.txt",
     "routes.txt",
@@ -5,9 +8,8 @@ const gtfsRequired = [
     "stop_times.txt"
 ];
 
-async function validateRequiredFileExistence(selectedDir) {
+export async function validateRequiredFileExistence(selectedDir) {
     let failedOn = null;
-    console.log(selectedDir);
 
     if (selectedDir instanceof Event) { // i.e. click
         selectedDir = selectedDir.target.files;
@@ -37,8 +39,6 @@ async function validateRequiredFileExistence(selectedDir) {
         throw new TypeError("The parameter to validateRequiredFileExistence must be a click event on the input element or a directory handle.");
     }
 
-
-    console.log(selectedDir.webkitRelativePath)
     const dirDisplayName = selectedDir.name ? ` "${selectedDir.name}" ` : " ";
     const selectionTextElement = document.getElementById("custom-region-selection");
 
@@ -84,25 +84,10 @@ function moveDirectlyToIndexedDB(selectedDir) {
 
 async function moveToIndexedDBViaOPFS(selectedDir) {
     // Implementation via OPFS for browsers not supporting showDirectoryPicker
-    const OPFSDirectory = await navigator.storage.getDirectory();
-    let workingOPFSDirectory;
-
-    // Ensure that old files are not going to interfere, e.g. if an optional file only exists in the previous feed, in a cross-platform way (preferably by deleting them)
-    if ("remove" in FileSystemFileHandle) {
-        for await (const fileHandle of OPFSDirectory.values()) {
-            if (fileHandle instanceof FileSystemFileHandle) {
-                await fileHandle.remove();
-            }
-        }
-        workingOPFSDirectory = OPFSDirectory;
-    } else {
-        workingOPFSDirectory = await OPFSDirectory.getDirectoryHandle(Array(OPFSDirectory.values()).length, { create: true }); // Number new directories sequentially
-    }
-
+    const workingOPFSDirectory = await OPFSCleanUp();
     const uploadedFiles = selectedDir;
 
     for (const file of uploadedFiles) {
-        console.log(workingOPFSDirectory)
         const fileHandle = await workingOPFSDirectory.getFileHandle(file.name, { create: true });
         const fs = await fileHandle.createWritable();
 
@@ -112,3 +97,5 @@ async function moveToIndexedDBViaOPFS(selectedDir) {
 
     saveToIndexedDB(workingOPFSDirectory, "custom");
 }
+
+document.getElementById("custom-region-select-button").addEventListener("click", selectCustomRegion);

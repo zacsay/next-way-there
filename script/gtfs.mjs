@@ -1,4 +1,4 @@
-async function saveToIndexedDB(feedDir, regionName) {
+export async function saveToIndexedDB(feedDir, regionName) {
     // Initialise the database connection
     const request = indexedDB.open(`nwtRegionDatabase-${regionName}`, 1);
     // Map object stores to corresponding GTFS files
@@ -72,11 +72,10 @@ async function saveToIndexedDB(feedDir, regionName) {
 
             Papa.parse(file, {
                 header: true, skipEmptyLines: true, complete: (parsed) => {
-                    console.log(store)
                     const transaction = db.transaction([store], "readwrite");
                     const objectStore = transaction.objectStore(store);
 
-                    objectStore.clear()
+                    objectStore.clear();
 
                     for (const obj of parsed.data) {
                         objectStore.add(obj);
@@ -138,7 +137,6 @@ async function saveToIndexedDB(feedDir, regionName) {
 
             fileHandles[file] = fileHandle;
         }
-        console.log(fileHandles);
 
         // Verify that existence requirements are met
         if (fileHandles["agency.txt"] === undefined || fileHandles["routes.txt"] === undefined || fileHandles["trips.txt"] === undefined || fileHandles["stop_times.txt"] === undefined) {

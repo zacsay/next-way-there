@@ -8,8 +8,8 @@ function updateRegion() {
     localStorage.setItem("nwtLastUsedRegion", region);
 
     if (region === "custom") {
-        customRegionOptions.removeAttribute("hidden")
+        customRegionOptions.removeAttribute("hidden");
     } else {
-        customRegionOptions.setAttribute("hidden", "")
+        customRegionOptions.setAttribute("hidden", "");
     }
 }

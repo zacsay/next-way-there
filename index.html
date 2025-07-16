@@ -8,12 +8,13 @@
   <link rel="stylesheet" href="./styles/styles.css">
   <script src="./script/papaparse.min.js"></script>
   <script src="./script/jszip.min.js"></script>
+  <script type="module" src="./script/preprocessors.mjs"></script>
   <script src="./script/notices.js"></script>
   <script defer src="./script/regionSelection.js"></script>
   <script defer src="./script/loader.js"></script>
-  <script src="./script/customRegion.js"></script>
-  <script src="./script/gtfs.js"></script>
-  <script defer src="./script/dynamicFeatures.js"></script>
+  <script type="module" src="./script/customRegion.mjs"></script>
+  <script type="module" src="./script/gtfs.mjs"></script>
+  <script type="module" src="./script/dynamicFeatures.mjs"></script>
 </head>
 
 <body>
@@ -47,16 +48,18 @@
     </div>
   </div>
   <div id="region-selector">
-    <label for="region-dropdown">Please select your region:</p>
-      <select id="region-dropdown" onchange="updateRegion()">
-        <option value="null" selected disabled>Please select a region.</option>
-        <option value="custom" id="custom-region-option">Custom...</option>
-      </select>
+    <label for="region-dropdown">Please select your region:</label>
+    <select id="region-dropdown" onchange="updateRegion()">
+      <option value="null" selected disabled>Please select a region.</option>
+      <option value="custom" id="custom-region-option">Custom...</option>
+    </select>
   </div>
   <div id="custom-region-options" hidden>
     <h2>Custom region options</h2>
     <p><a href="./help/custom-regions.html">Learn how to use custom regions</a></p>
-    <div id="custom-region-select-button-container"><button onclick="selectCustomRegion()">Select directory with GTFS data</button></div><p id="custom-region-selection"></p>
+    <div id="custom-region-select-button-container"><button id="custom-region-select-button">Select directory with GTFS
+        data</button></div>
+    <p id="custom-region-selection"></p>
   </div>
 </body>
 
