@@ -3,7 +3,7 @@ import { validateRequiredFileExistence } from "./customRegion.mjs";
 // showDirectoryPicker -> input webkitdirectory
 if (!("showDirectoryPicker" in window)) {
     const buttonLocation = document.getElementById("custom-region-select-button-container");
-    const standardButton = buttonLocation.childNodes[0];
+    const standardButton = buttonLocation.firstElementChild;
     const buttonText = standardButton.innerText;
 
     standardButton.remove();
