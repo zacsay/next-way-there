@@ -27,12 +27,12 @@ export async function validateRequiredFileExistence(selectedDir, dirDisplayNameO
             }
         }
     } else if (selectedDir instanceof FileSystemDirectoryHandle) {
-        console.log(selectedDir.name)
+        console.log(selectedDir.name);
         for (const file of gtfsRequired) {
             try {
                 await selectedDir.getFileHandle(file);
             } catch (e) {
-                console.error(e)
+                console.error(e);
                 failedOn = file;
                 break;
             }
@@ -99,10 +99,10 @@ function confirmIndexedDBCopy() {
 }
 
 function moveToIndexedDB(selectedDir) {
-    if (!confirmIndexedDBCopy) {
+    if (!confirmIndexedDBCopy()) {
         return;
     }
-    if ("showDirectoryPicker" in window) {
+    if (selectedDir instanceof FileSystemDirectoryHandle) {
         moveDirectlyToIndexedDB(selectedDir);
     } else {
         moveToIndexedDBViaOPFS(selectedDir);
