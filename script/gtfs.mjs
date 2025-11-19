@@ -1,93 +1,124 @@
+/**
+ * Saves the data in the directory to the IndexedDB
+ * @param {FileSystemDirectoryHandle} feedDir The directory containing the data to save
+ * @param {string} regionName The name to use for the region to enable multiple to be used without rebuilding the database every time
+ * @returns {Promise} Resolves when the database operations are complete.
+ */
 export async function saveToIndexedDB(feedDir, regionName) {
-    // Initialise the database connection
-    const request = indexedDB.open(`nwtRegionDatabase-${regionName}`, 1);
-    // Map object stores to corresponding GTFS files
-    const OSToGTFS = {
-        "agencies": "agency.txt",
-        "stops": "stops.txt",
-        "routes": "routes.txt",
-        "trips": "trips.txt",
-        "stop_times": "stop_times.txt",
-        "calendar": "calendar.txt",
-        "calendar_dates": "calendar_dates.txt"
-    };
-    let db;
+    return new Promise((resolve, reject) => {
+        // Initialise the database connection
+        const request = indexedDB.open(`nwtRegionDatabase-${regionName}`, 1);
+        // Map object stores to corresponding GTFS files
+        const OSToGTFS = {
+            "agencies": "agency.txt",
+            "stops": "stops.txt",
+            "routes": "routes.txt",
+            "trips": "trips.txt",
+            "stop_times": "stop_times.txt",
+            "calendar": "calendar.txt",
+            "calendar_dates": "calendar_dates.txt"
+        };
+        let db;
 
-    request.onerror = () => {
-        console.error(request.error);
-    };
-    request.onupgradeneeded = (event) => {
-        db = event.target.result;
-
-        const agencyOS = db.createObjectStore("agencies", { keyPath: "agency_id" });
-        const stopsOS = db.createObjectStore("stops", { keyPath: "stop_id" });
-        const routesOS = db.createObjectStore("routes", { keyPath: "route_id" });
-        const tripsOS = db.createObjectStore("trips", { keyPath: "trip_id" });
-        const stopTimesOS = db.createObjectStore("stop_times", { keyPath: ["trip_id", "stop_sequence"] });
-        const calendarOS = db.createObjectStore("calendar", { keyPath: "service_id" });
-        const calendarDatesOS = db.createObjectStore("calendar_dates", { keyPath: ["service_id", "date"] });
-
-        // Define indices for searching the database
-        stopsOS.createIndex("stop_code", "stop_code");
-        stopsOS.createIndex("stop_name", "stop_name");
-        stopsOS.createIndex("parent_station", "parent_station");
-
-        routesOS.createIndex("agency_id", "agency_id");
-        routesOS.createIndex("route_short_name", "route_short_name");
-        routesOS.createIndex("route_long_name", "route_long_name");
-        routesOS.createIndex("route_type", "route_type");
-
-        tripsOS.createIndex("route_id", "route_id");
-        tripsOS.createIndex("service_id", "service_id");
-        tripsOS.createIndex("direction_id", "direction_id");
-
-        stopTimesOS.createIndex("arrival_time", "arrival_time");
-        stopTimesOS.createIndex("departure_time", "departure_time");
-        stopTimesOS.createIndex("stop_id", "stop_id");
-        stopTimesOS.createIndex("pickup_type", "pickup_type");
-        stopTimesOS.createIndex("drop_off_type", "drop_off_type");
-
-        calendarOS.createIndex("monday", "monday");
-        calendarOS.createIndex("tuesday", "tuesday");
-        calendarOS.createIndex("wednesday", "wednesday");
-        calendarOS.createIndex("thursday", "thursday");
-        calendarOS.createIndex("friday", "friday");
-        calendarOS.createIndex("saturday", "saturday");
-        calendarOS.createIndex("sunday", "sunday");
-
-        calendarDatesOS.createIndex("date", "date");
-    };
-
-    request.onsuccess = async (event) => {
-        db = event.target.result;
-
-        db.onerror = (event) => { // Catch-all error handler
-            throw new Error(`Database error: ${event.target.error?.message}`);
+        request.onerror = (_) => {
+            reject(`Error while opening database: ${request.error.message}`);
         };
 
-        const fileHandles = await getGTFSFileHandles();
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
 
-        for (const [store, fileName] of Object.entries(OSToGTFS)) {
-            const file = await fileHandles[fileName].getFile().then();
+            const agencyOS = db.createObjectStore("agencies", { keyPath: "agency_id" });
+            const stopsOS = db.createObjectStore("stops", { keyPath: "stop_id" });
+            const routesOS = db.createObjectStore("routes", { keyPath: "route_id" });
+            const tripsOS = db.createObjectStore("trips", { keyPath: "trip_id" });
+            const stopTimesOS = db.createObjectStore("stop_times", { keyPath: ["trip_id", "stop_sequence"] });
+            const calendarOS = db.createObjectStore("calendar", { keyPath: "service_id" });
+            const calendarDatesOS = db.createObjectStore("calendar_dates", { keyPath: ["service_id", "date"] });
 
-            Papa.parse(file, {
-                header: true, skipEmptyLines: true, complete: (parsed) => {
-                    const transaction = db.transaction([store], "readwrite");
-                    const objectStore = transaction.objectStore(store);
+            // Define indices for searching the database
+            stopsOS.createIndex("stop_code", "stop_code");
+            stopsOS.createIndex("stop_name", "stop_name");
+            stopsOS.createIndex("parent_station", "parent_station");
 
-                    objectStore.clear();
+            routesOS.createIndex("agency_id", "agency_id");
+            routesOS.createIndex("route_short_name", "route_short_name");
+            routesOS.createIndex("route_long_name", "route_long_name");
+            routesOS.createIndex("route_type", "route_type");
 
-                    for (const obj of parsed.data) {
-                        objectStore.add(obj);
-                    }
-                }
-            });
-        }
-    };
+            tripsOS.createIndex("route_id", "route_id");
+            tripsOS.createIndex("service_id", "service_id");
+            tripsOS.createIndex("direction_id", "direction_id");
 
-    request.onerror = (event) => {
-        throw new Error(`Database connection error: ${request.error}`);
-    };
+            stopTimesOS.createIndex("arrival_time", "arrival_time");
+            stopTimesOS.createIndex("departure_time", "departure_time");
+            stopTimesOS.createIndex("stop_id", "stop_id");
+            stopTimesOS.createIndex("pickup_type", "pickup_type");
+            stopTimesOS.createIndex("drop_off_type", "drop_off_type");
+
+            calendarOS.createIndex("monday", "monday");
+            calendarOS.createIndex("tuesday", "tuesday");
+            calendarOS.createIndex("wednesday", "wednesday");
+            calendarOS.createIndex("thursday", "thursday");
+            calendarOS.createIndex("friday", "friday");
+            calendarOS.createIndex("saturday", "saturday");
+            calendarOS.createIndex("sunday", "sunday");
+
+            calendarDatesOS.createIndex("date", "date");
+        };
+
+        request.onsuccess = async (event) => {
+            db = event.target.result;
+
+            db.onerror = (event) => { // Catch-all error handler
+                reject(`Database error: ${event.target.error?.message}`);
+            };
+
+            const fileHandles = await getGTFSFileHandles();
+
+            const transactionCount = Object.keys(OSToGTFS).length;
+            let completedTransactionCount = 0;
+            let allTransactionsSent = false;
+
+            for (const [store, fileName] of Object.entries(OSToGTFS)) {
+                const file = await fileHandles[fileName].getFile();
+
+                Papa.parse(file, {
+                    header: true,
+                    skipEmptyLines: true,
+                    worker: true,
+                    error: (err, f) => { reject(err); },
+                    complete: (parsed) => {
+                        const transaction = db.transaction([store], "readwrite");
+                        const objectStore = transaction.objectStore(store);
+
+                        objectStore.clear();
+
+                        for (const obj of parsed.data) {
+                            objectStore.add(obj);
+                        }
+
+                        transaction.oncomplete = (event) => {
+                            completedTransactionCount++;
+                            console.log(`Completed ${completedTransactionCount} transactions (${event.target.objectStoreNames[0]})`);
+
+                            if ((transactionCount == completedTransactionCount) && allTransactionsSent) {
+                                console.log("IndexedDB filled");
+                                resolve();
+                            }
+                        };
+                        transaction.onabort = (_) => {
+                            reject(`Transaction aborted`);
+                        };
+                        transaction.onerror = (_) => {
+                            reject(`Database error in transaction: ${event.target.error?.message}`);
+                        };
+                    },
+                });
+            }
+
+            allTransactionsSent = true;
+        };
+    });
 
     async function getGTFSFileHandles() {
         // Discover the required files used
@@ -131,8 +162,10 @@ export async function saveToIndexedDB(feedDir, regionName) {
 
             try {
                 fileHandle = await feedDir.getFileHandle(file);
-            } catch (NotFoundError) {
-                continue;
+            } catch (error) {
+                if (error.name === "NotFoundError") {
+                    continue;
+                }
             }
 
             fileHandles[file] = fileHandle;
