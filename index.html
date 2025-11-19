@@ -26,24 +26,28 @@
       </div>
     </noscript>
     <div class="minor-notice">
-      <p>This website is not ready for actual use yet. You can check out the development <a
-          href="https://github.com/zacsay/next-way-there">here</a>.</p>
+      <p>This website is not ready for actual use yet. You can check out the development
+        <a href="https://github.com/zacsay/next-way-there">here</a>.
+      </p>
     </div>
     <div hidden class="success-notice" id="updates-downloaded">
-      <p>Updates successfully downloaded. <button onclick="dismissNotice('updates-downloaded')">Dismiss</button></p>
+      <p>Updates successfully downloaded.
+        <button onclick="dismissNotice('updates-downloaded')">Dismiss</button>
+      </p>
     </div>
     <div hidden class="minor-notice" id="downloading-updates">
       <p>Downloading updated region list. Please wait.</p>
     </div>
     <div hidden class="minor-notice" id="missing-some-data">
-      <p>New regions are available. You can update the region list. <button onclick="loadRegions()">Update region
-          list</button></p>
+      <p>New regions are available. You can update the region list.
+        <button onclick="loadRegions()">Update region list</button>
+      </p>
     </div>
     <div hidden class="medium-notice" id="missing-all-data">
       <p>You do not appear to have used this site before, or the site's data in this browser
         has been deleted. You need to download the region list before you can use pre-defined regions. You
-        can
-        still load local GTFS files without doing this. <button onclick="loadRegions()">Download region list</button>
+        can still load local GTFS feeds without doing this.
+        <button onclick="loadRegions()">Download region list</button>
       </p>
     </div>
   </div>
@@ -58,7 +62,9 @@
     <h2>Custom region options</h2>
     <p><a href="./help/custom-regions.html">Learn how to use custom regions</a></p>
     <div id="custom-region-select-button-container">
-      <button id="custom-region-select-button">Select directory with GTFS data</button>
+      <button id="custom-region-select-extracted-button">Select directory with extracted GTFS feed</button>
+      <p>or</p>
+      <button id="custom-region-select-zipped-button">Select GTFS feed contained in a zip file</button>
     </div>
     <p id="custom-region-selection"></p>
   </div>

@@ -1,5 +1,5 @@
 import { saveToIndexedDB } from "./gtfs.mjs";
-import { OPFSCleanUp } from "./preprocessors.mjs";
+import { OPFSCleanUp, preprocessors } from "./preprocessors.mjs";
 
 const gtfsRequired = [
     "agency.txt",
@@ -8,7 +8,7 @@ const gtfsRequired = [
     "stop_times.txt"
 ];
 
-export async function validateRequiredFileExistence(selectedDir) {
+export async function validateRequiredFileExistence(selectedDir, dirDisplayNameOverride = null) {
     let failedOn = null;
 
     if (selectedDir instanceof Event) { // i.e. click
@@ -27,10 +27,12 @@ export async function validateRequiredFileExistence(selectedDir) {
             }
         }
     } else if (selectedDir instanceof FileSystemDirectoryHandle) {
+        console.log(selectedDir.name)
         for (const file of gtfsRequired) {
             try {
                 await selectedDir.getFileHandle(file);
-            } catch (NotFoundError) {
+            } catch (e) {
+                console.error(e)
                 failedOn = file;
                 break;
             }
@@ -39,7 +41,7 @@ export async function validateRequiredFileExistence(selectedDir) {
         throw new TypeError("The parameter to validateRequiredFileExistence must be a click event on the input element or a directory handle.");
     }
 
-    const dirDisplayName = selectedDir.name ? ` "${selectedDir.name}" ` : " ";
+    const dirDisplayName = dirDisplayNameOverride ?? (selectedDir.name ? ` "${selectedDir.name}" ` : " ");
     const selectionTextElement = document.getElementById("custom-region-selection");
 
     if (failedOn === null) {
@@ -51,16 +53,45 @@ export async function validateRequiredFileExistence(selectedDir) {
         moveButton.addEventListener("click", (_) => moveToIndexedDB(selectedDir));
 
         selectionTextElement.appendChild(moveButton);
+
+        return true;
     } else {
         selectionTextElement.innerHTML = `<pre style="display: inline;">${failedOn}</pre> not found. Selected directory${dirDisplayName}does not contain valid GTFS data. \u274c`;
         selectionTextElement.setAttribute("class", "fail-text");
+
+        return false;
     }
 }
 
-async function selectCustomRegion() {
-    let selectedDir = await showDirectoryPicker();
+async function selectExtractedCustomRegion() {
+    let selectedDir = await showDirectoryPicker({ id: "gtfs" });
 
     validateRequiredFileExistence(selectedDir);
+}
+
+async function selectZippedCustomRegion() {
+    let selectedZip = await showOpenFilePicker({
+        id: "gtfs",
+        types: [
+            {
+                accept: {
+                    "application/zip": [".zip"]
+                }
+            }
+        ],
+        excludeAcceptAllOption: true
+    });
+    console.log(selectedZip);
+
+    // There are two ways that this could be done:
+    // Check to see if the root of the archive passes file existence checks and then only prompt the user to go deeper if the validation fails (currently in use). More convenient for the user, but may carry a slight performance disadvantage for large zip files which are then processed twice UNLESS the state of the extracted root is maintained.
+    // Ask the user straight away for permission to extract the archive recursively. Potentially annoying but means that the archive can be unzipped as necessary immediately.
+
+    if (await validateRequiredFileExistence(await preprocessors[0](await selectedZip[0].getFile()), ` ${selectedZip[0].name} `)) {
+        console.log("Valid!");
+    } else {
+        console.log("Not valid");
+    }
 }
 
 function confirmIndexedDBCopy() {
@@ -98,4 +129,5 @@ async function moveToIndexedDBViaOPFS(selectedDir) {
     saveToIndexedDB(workingOPFSDirectory, "custom");
 }
 
-document.getElementById("custom-region-select-button").addEventListener("click", selectCustomRegion);
+document.getElementById("custom-region-select-extracted-button").addEventListener("click", selectExtractedCustomRegion);
+document.getElementById("custom-region-select-zipped-button").addEventListener("click", selectZippedCustomRegion);
