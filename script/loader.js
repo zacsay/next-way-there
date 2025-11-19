@@ -5,7 +5,7 @@ var regionConfigurations = JSON.parse(localStorage.getItem("nwtRegionConfigurati
 function loadRegions(silent = false, save = true) {
     let complete = 0;
     let success = false;
-    let regionConfigurations = {};
+    regionConfigurations = {};
 
     function responseHandler(region, request) {
         complete++;
