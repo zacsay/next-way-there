@@ -70,3 +70,14 @@
 .fail-text {
     color: red;
 }
+
+.fs-no-border {
+    border: none;
+    border-left: 2px solid black;
+    padding: 0 0 0 4px;
+}
+
+*>fieldset[disabled] {
+    color: grey;
+    border-left-color: lightgrey;
+}

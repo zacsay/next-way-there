@@ -13,3 +13,23 @@ function updateRegion() {
         customRegionOptions.setAttribute("hidden", "");
     }
 }
+
+function updateCustomRegionUploadMode() {
+    const useExistingRadio = document.getElementById("use-existing-custom-region-radio");
+    const createNewRadio = document.getElementById("create-new-custom-region-radio");
+
+    const useExistingOptionsDiv = document.getElementById("use-existing-custom-region-options");
+    const createNewOptionsDiv = document.getElementById("create-new-custom-region-options")
+
+    if (useExistingRadio.checked) {
+        useExistingOptionsDiv.removeAttribute("disabled")
+        createNewOptionsDiv.setAttribute("disabled", "")
+    }
+
+    if (createNewRadio.checked) {
+        createNewOptionsDiv.removeAttribute("disabled")
+        useExistingOptionsDiv.setAttribute("disabled", "")
+    }
+}
+
+updateCustomRegionUploadMode()
