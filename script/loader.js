@@ -48,15 +48,19 @@ function loadRegions(silent = false, save = true) {
 function updateRegionDropdown() {
     const regionDropdown = document.getElementById("region-dropdown");
     const lastUsedRegion = localStorage.getItem("nwtLastUsedRegion");
+
     try {
         for (const [regionName, region] of Object.entries(regionConfigurations)) {
             const newOption = document.createElement("option");
             const newOptionText = document.createTextNode(region.friendlyName);
+
             newOption.setAttribute("value", regionName);
             newOption.appendChild(newOptionText);
+
             if (lastUsedRegion === regionName) {
                 newOption.setAttribute("selected", "");
             }
+
             regionDropdown.appendChild(newOption);
         }
     } catch (error) {
@@ -72,6 +76,29 @@ function updateRegionDropdown() {
     updateRegion();
 }
 
+function updateCustomRegionDropdown() {
+    const customRegionDropdown = document.getElementById("existing-custom-region-select");
+
+    indexedDB.databases().then(
+        (databases) => {
+            for (const database of databases) {
+                if (database.name?.startsWith("nwtRegionDatabase-custom")) {
+                    const displayName = database.name.slice(25) || "(no name)";
+                    const realName = database.name;
+
+                    const newOption = document.createElement("option");
+                    const newOptionText = document.createTextNode(displayName);
+
+                    newOption.setAttribute("value", realName);
+                    newOption.appendChild(newOptionText);
+
+                    customRegionDropdown.appendChild(newOption);
+                }
+            }
+        }
+    );
+}
+
 if (!regionConfigurations) {
     document.getElementById("missing-all-data").removeAttribute("hidden");
 } else if (Object.keys(regionConfigurations).length !== knownRegions.length) {
@@ -79,3 +106,4 @@ if (!regionConfigurations) {
 }
 
 updateRegionDropdown();
+updateCustomRegionDropdown();
