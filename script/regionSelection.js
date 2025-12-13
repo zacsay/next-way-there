@@ -19,17 +19,30 @@ function updateCustomRegionUploadMode() {
     const createNewRadio = document.getElementById("create-new-custom-region-radio");
 
     const useExistingOptionsDiv = document.getElementById("use-existing-custom-region-options");
-    const createNewOptionsDiv = document.getElementById("create-new-custom-region-options")
+    const createNewOptionsDiv = document.getElementById("create-new-custom-region-options");
 
     if (useExistingRadio.checked) {
-        useExistingOptionsDiv.removeAttribute("disabled")
-        createNewOptionsDiv.setAttribute("disabled", "")
+        useExistingOptionsDiv.removeAttribute("disabled");
+        createNewOptionsDiv.setAttribute("disabled", "");
+        showHideCustomRegionUpload();
     }
 
     if (createNewRadio.checked) {
-        createNewOptionsDiv.removeAttribute("disabled")
-        useExistingOptionsDiv.setAttribute("disabled", "")
+        createNewOptionsDiv.removeAttribute("disabled");
+        useExistingOptionsDiv.setAttribute("disabled", "");
+        showHideCustomRegionUpload(true);
     }
 }
 
-updateCustomRegionUploadMode()
+function showHideCustomRegionUpload(forceShow = false) {
+    const readOnlyRadio = document.getElementById("existing-custom-region-read-only");
+    const hideableContainer = document.getElementById("custom-region-select-button-container");
+
+    if (forceShow || !readOnlyRadio.checked) {
+        hideableContainer.removeAttribute("hidden");
+    } else {
+        hideableContainer.setAttribute("hidden", "");
+    }
+}
+
+updateCustomRegionUploadMode();

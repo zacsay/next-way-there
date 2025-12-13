@@ -66,9 +66,9 @@
       <input id="use-existing-custom-region-radio" type="radio" name="custom-region-upload" onchange="updateCustomRegionUploadMode()" checked />
       <label for="use-existing-custom-region-radio">Use an existing custom region</label>
       <fieldset id="use-existing-custom-region-options" class="fs-no-border">
-        <input id="existing-custom-region-read-only" type="radio" name="existing-custom-region-mode" checked />
+        <input id="existing-custom-region-read-only" type="radio" name="existing-custom-region-mode" onchange="showHideCustomRegionUpload()" checked />
         <label for="existing-custom-region-read-only">Open for reading only</label>
-        <input id="existing-custom-region-overwrite" type="radio" name="existing-custom-region-mode" />
+        <input id="existing-custom-region-overwrite" type="radio" name="existing-custom-region-mode" onchange="showHideCustomRegionUpload()" />
         <label for="existing-custom-region-overwrite">Overwrite with new data</label><br>
         <label for="existing-custom-region-select">Select an existing custom region:</label>
         <select id="existing-custom-region-select">
