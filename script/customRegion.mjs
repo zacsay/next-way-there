@@ -98,19 +98,22 @@ function confirmIndexedDBCopy() {
     return !!confirm("The required data will be copied to the IndexedDB. None of the dataset which you are currently using will be modified, but it will be substantially duplicated elsewhere on your device, so large datasets may use a significant amount of your available storage space.\nIt will be safe to delete your copy of the data once the operation is complete, if you want to.\nIt may also take some time to copy and optimise, depending on your device and the size of the dataset.\nPlease confirm that you want the data copied.");
 }
 
-function moveToIndexedDB(selectedDir) {
+async function moveToIndexedDB(selectedDir) {
     if (!confirmIndexedDBCopy()) {
         return;
     }
     if (selectedDir instanceof FileSystemDirectoryHandle) {
-        moveDirectlyToIndexedDB(selectedDir);
+        await moveDirectlyToIndexedDB(selectedDir);
     } else {
-        moveToIndexedDBViaOPFS(selectedDir);
+        await moveToIndexedDBViaOPFS(selectedDir);
     }
+
+    sessionStorage.setItem("nwtCustomRegionJustUploaded", getCustomRegionDatabaseName());
+    location.reload();
 }
 
-function moveDirectlyToIndexedDB(selectedDir) {
-    saveToIndexedDB(selectedDir, getCustomRegionDatabaseName());
+async function moveDirectlyToIndexedDB(selectedDir) {
+    return saveToIndexedDB(selectedDir, getCustomRegionDatabaseName());
 }
 
 async function moveToIndexedDBViaOPFS(selectedDir) {
@@ -126,15 +129,38 @@ async function moveToIndexedDBViaOPFS(selectedDir) {
         await fs.close();
     }
 
-    saveToIndexedDB(workingOPFSDirectory, getCustomRegionDatabaseName());
+    return saveToIndexedDB(workingOPFSDirectory, getCustomRegionDatabaseName());
+}
+
+function getCustomRegionDatabaseName() {
+    const customRegionNameInput = document.getElementById("custom-region-name");
+    const overwriteRadioButton = document.getElementById("existing-custom-region-overwrite");
+    const overwritingRegionSelect = document.getElementById("existing-custom-region-select");
+
+    const customRegionName = overwriteRadioButton?.checked ? overwritingRegionSelect?.value.slice(25) : customRegionNameInput?.value;
+
+    return customRegionName ? `custom-${customRegionName}` : "custom";
+}
+
+/**
+ * Updates the UI so that the custom region identified by the provided database name is selected.
+ * @param {string} customRegionDatabaseName - The custom region database to select
+ */
+function selectCustomRegion(customRegionDatabaseName) {
+    console.log(`Updating custom region selection to ${customRegionDatabaseName}.`);
+    document.getElementById("custom-region-option").setAttribute("selected", "");
+    document.getElementById("use-existing-custom-region-radio").setAttribute("checked", "");
+    document.getElementById("existing-custom-region-read-only").setAttribute("checked", "");
+    document.getElementById("existing-custom-region-select").value = `nwtRegionDatabase-${customRegionDatabaseName}`;
 }
 
 document.getElementById("custom-region-select-extracted-button").addEventListener("click", selectExtractedCustomRegion);
 document.getElementById("custom-region-select-zipped-button").addEventListener("click", selectZippedCustomRegion);
 
-function getCustomRegionDatabaseName() {
-    const customRegionNameInput = document.getElementById("custom-region-name");
-    const customRegionName = customRegionNameInput?.value;
-    
-    return customRegionName ? `custom-${customRegionName}` : "custom"
+const customRegionJustUploaded = sessionStorage.getItem("nwtCustomRegionJustUploaded");
+
+if (customRegionJustUploaded) {
+    createNotice("success-notice", "Successfully uploaded data for custom region");
+    window.addEventListener("pageshow", (_) => selectCustomRegion(customRegionJustUploaded));
+    sessionStorage.removeItem("nwtCustomRegionJustUploaded");
 }
