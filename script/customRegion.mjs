@@ -110,7 +110,7 @@ function moveToIndexedDB(selectedDir) {
 }
 
 function moveDirectlyToIndexedDB(selectedDir) {
-    saveToIndexedDB(selectedDir, "custom");
+    saveToIndexedDB(selectedDir, getCustomRegionDatabaseName());
 }
 
 async function moveToIndexedDBViaOPFS(selectedDir) {
@@ -126,8 +126,15 @@ async function moveToIndexedDBViaOPFS(selectedDir) {
         await fs.close();
     }
 
-    saveToIndexedDB(workingOPFSDirectory, "custom");
+    saveToIndexedDB(workingOPFSDirectory, getCustomRegionDatabaseName());
 }
 
 document.getElementById("custom-region-select-extracted-button").addEventListener("click", selectExtractedCustomRegion);
 document.getElementById("custom-region-select-zipped-button").addEventListener("click", selectZippedCustomRegion);
+
+function getCustomRegionDatabaseName() {
+    const customRegionNameInput = document.getElementById("custom-region-name");
+    const customRegionName = customRegionNameInput?.value;
+    
+    return customRegionName ? `custom-${customRegionName}` : "custom"
+}
