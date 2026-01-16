@@ -73,11 +73,11 @@ function updateRegionDropdown() {
     if (lastUsedRegion === "custom") {
         document.getElementById("custom-region-option").setAttribute("selected", "");
     }
-    updateRegion();
 }
 
 function updateCustomRegionDropdown() {
     const customRegionDropdown = document.getElementById("existing-custom-region-select");
+    const lastUsedCustomRegion = localStorage.getItem("nwtLastUsedCustomRegion");
 
     indexedDB.databases().then(
         (databases) => {
@@ -91,6 +91,10 @@ function updateCustomRegionDropdown() {
 
                     newOption.setAttribute("value", realName);
                     newOption.appendChild(newOptionText);
+
+                    if (database.name === lastUsedCustomRegion) {
+                        newOption.setAttribute("selected", "");
+                    }
 
                     customRegionDropdown.appendChild(newOption);
                 }
@@ -107,3 +111,4 @@ if (!regionConfigurations) {
 
 updateRegionDropdown();
 updateCustomRegionDropdown();
+updateRegionUI();

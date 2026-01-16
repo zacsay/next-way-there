@@ -51,42 +51,49 @@
       </p>
     </div>
   </div>
-  <div id="region-selector">
-    <label for="region-dropdown">Please select your region:</label>
-    <select id="region-dropdown" onchange="updateRegion()">
-      <option value="null" selected disabled>Please select a region.</option>
-      <option value="custom" id="custom-region-option">Custom...</option>
-    </select>
-  </div>
-  <div id="custom-region-options" hidden>
-    <h2>Custom region options</h2>
-    <p><a href="./help/custom-regions.html">Learn how to use custom regions</a></p>
-    <fieldset id="custom-region-creation-mode">
-      <legend>Custom region data upload mode</legend>
-      <input id="use-existing-custom-region-radio" type="radio" name="custom-region-upload" onchange="updateCustomRegionUploadMode()" checked autocomplete="off" />
-      <label for="use-existing-custom-region-radio">Use an existing custom region</label>
-      <fieldset id="use-existing-custom-region-options" class="fs-no-border">
-        <input id="existing-custom-region-read-only" type="radio" name="existing-custom-region-mode" onchange="showHideCustomRegionUpload()" checked autocomplete="off" />
-        <label for="existing-custom-region-read-only">Open for reading only</label>
-        <input id="existing-custom-region-overwrite" type="radio" name="existing-custom-region-mode" onchange="showHideCustomRegionUpload()" autocomplete="off" />
-        <label for="existing-custom-region-overwrite">Overwrite with new data</label><br>
-        <label for="existing-custom-region-select">Select an existing custom region:</label>
-        <select id="existing-custom-region-select"><!-- This should be filled by a script --></select>
-      </fieldset>
-      <input id="create-new-custom-region-radio" type="radio" name="custom-region-upload" onchange="updateCustomRegionUploadMode()" autocomplete="off" />
-      <label for="create-new-custom-region-radio">Create a new custom region</label>
-      <fieldset id="create-new-custom-region-options" class="fs-no-border">
-        <label for="custom-region-name">Enter a name for your custom region:</label>
-        <input id="custom-region-name" type="text" placeholder="Custom region name" autocomplete="off" />
-      </fieldset>
-    </fieldset>
-    <div id="custom-region-select-button-container">
-      <button id="custom-region-select-extracted-button">Select directory with extracted GTFS feed</button>
-      <p>or</p>
-      <button id="custom-region-select-zipped-button">Select GTFS feed contained in a zip file</button>
+  <div id="region-options">
+    <div id="region-selector">
+      <label for="region-dropdown">Please select your region:</label>
+      <select id="region-dropdown" onchange="updateRegionUI()">
+        <option value="null" selected disabled>Please select a region.</option>
+        <option value="custom" id="custom-region-option">Custom...</option>
+      </select>
     </div>
-    <p id="custom-region-selection"></p>
+    <div id="custom-region-options" hidden>
+      <h2>Custom region options</h2>
+      <p><a href="./help/custom-regions.html">Learn how to use custom regions</a></p>
+      <fieldset id="custom-region-creation-mode">
+        <legend>Custom region data upload mode</legend>
+        <input id="use-existing-custom-region-radio" type="radio" name="custom-region-upload"
+          onchange="updateCustomRegionUploadMode()" checked autocomplete="off" />
+        <label for="use-existing-custom-region-radio">Use an existing custom region</label>
+        <fieldset id="use-existing-custom-region-options" class="fs-no-border">
+          <input id="existing-custom-region-read-only" type="radio" name="existing-custom-region-mode"
+            onchange="showHideCustomRegionUpload()" checked autocomplete="off" />
+          <label for="existing-custom-region-read-only">Open for reading only</label>
+          <input id="existing-custom-region-overwrite" type="radio" name="existing-custom-region-mode"
+            onchange="showHideCustomRegionUpload()" autocomplete="off" />
+          <label for="existing-custom-region-overwrite">Overwrite with new data</label><br>
+          <label for="existing-custom-region-select">Select an existing custom region:</label>
+          <select id="existing-custom-region-select" onchange="updateRegionUI()"><!-- This should be filled by a script --></select>
+        </fieldset>
+        <input id="create-new-custom-region-radio" type="radio" name="custom-region-upload"
+          onchange="updateCustomRegionUploadMode()" autocomplete="off" />
+        <label for="create-new-custom-region-radio">Create a new custom region</label>
+        <fieldset id="create-new-custom-region-options" class="fs-no-border">
+          <label for="custom-region-name">Enter a name for your custom region:</label>
+          <input id="custom-region-name" type="text" placeholder="Custom region name" autocomplete="off" />
+        </fieldset>
+      </fieldset>
+      <div id="custom-region-select-button-container">
+        <button id="custom-region-select-extracted-button">Select directory with extracted GTFS feed</button>
+        <p>or</p>
+        <button id="custom-region-select-zipped-button">Select GTFS feed contained in a zip file</button>
+      </div>
+      <p id="custom-region-selection"></p>
+    </div>
   </div>
+  <p>Selected region: <span id="selected-region-name">(no region selected)</span> <button id="toggle-region-options-button" onclick="showHideRegionOptions()">Hide region options</button></p>
 </body>
 
 </html>

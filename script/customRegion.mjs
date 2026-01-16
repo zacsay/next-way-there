@@ -151,7 +151,13 @@ function selectCustomRegion(customRegionDatabaseName) {
     document.getElementById("custom-region-option").setAttribute("selected", "");
     document.getElementById("use-existing-custom-region-radio").setAttribute("checked", "");
     document.getElementById("existing-custom-region-read-only").setAttribute("checked", "");
-    document.getElementById("existing-custom-region-select").value = `nwtRegionDatabase-${customRegionDatabaseName}`;
+
+    for (const option of document.querySelectorAll("#existing-custom-region-select>option")) {
+        option.removeAttribute("selected");
+    }
+
+    document.querySelector(`#existing-custom-region-select>option[value="nwtRegionDatabase-${customRegionDatabaseName}"]`)?.setAttribute("selected", "");
+    updateRegionUI();
 }
 
 document.getElementById("custom-region-select-extracted-button").addEventListener("click", selectExtractedCustomRegion);
