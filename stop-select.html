@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select a Stop - NextWayThere</title>
+    <link rel="stylesheet" href="styles/styles.css">
+</head>
+
+<body>
+    <h1>Select a stop</h1>
+    <p>If you know the GTFS <code>stop_id</code>, it is recommended you choose the stop using it, as it is unambiguous.
+        You may select a stop or station (i.e. <code>location_type=0</code> or <code>location_type=1</code>). If you
+        select a station (<code>location_type=1</code>), all child stops will be selected, so this is usually the
+        recommended approach, unless you want finer control over interchange times, etc.</p>
+    <label for="gtfs-stop-id-input">GTFS <code>stop_id</code>: </label><input type="text" id="gtfs-stop-id-input">
+    <button type="button" id="gtfs-stop-id-submit">Use GTFS <code>stop_id</code></button>
+    <hr>
+    <p>If you do not know the GTFS <code>stop_id</code>, you can try searching for the stop using one of the other
+        options below:</p>
+    <label for="gtfs-stop-code-input">Stop code: </label><input type="text" id="gtfs-stop-code-input"> <button
+        type="button" id="gtfs-stop-code-submit">Search for stop code in the database</button><br>
+    <label for="gtfs-stop-name-input">Stop name: </label><input type="text" id="gtfs-stop-name-input"> <button
+        type="button" id="gtfs-stop-name-submit">Search for stop name in the database</button>
+    <div id="confirm-cancel-buttons-div">
+        <button disabled type="button" id="confirm-button">Confirm</button> <code id="selected-stop-id">---</code> <span id="selected-stop-name">No stop selected</span><br>
+        <button type="button" id="cancel-button">Cancel</button>
+    </div>
+</body>
+
+</html>

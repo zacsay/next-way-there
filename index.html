@@ -15,6 +15,7 @@
   <script type="module" src="./script/customRegion.mjs"></script>
   <script type="module" src="./script/gtfs.mjs"></script>
   <script type="module" src="./script/dynamicFeatures.mjs"></script>
+  <script type="module" src="./script/trips.mjs"></script>
 </head>
 
 <body>
@@ -75,7 +76,8 @@
             onchange="showHideCustomRegionUpload()" autocomplete="off" />
           <label for="existing-custom-region-overwrite">Overwrite with new data</label><br>
           <label for="existing-custom-region-select">Select an existing custom region:</label>
-          <select id="existing-custom-region-select" onchange="updateRegionUI()"><!-- This should be filled by a script --></select>
+          <select id="existing-custom-region-select"
+            onchange="updateRegionUI()"><!-- This should be filled by a script --></select>
         </fieldset>
         <input id="create-new-custom-region-radio" type="radio" name="custom-region-upload"
           onchange="updateCustomRegionUploadMode()" autocomplete="off" />
@@ -93,7 +95,10 @@
       <p id="custom-region-selection"></p>
     </div>
   </div>
-  <p>Selected region: <span id="selected-region-name">(no region selected)</span> <button id="toggle-region-options-button" onclick="showHideRegionOptions()">Hide region options</button></p>
+  <p>Selected region: <span id="selected-region-name">(no region selected)</span> <button
+      id="toggle-region-options-button" onclick="showHideRegionOptions()">Hide region options</button></p>
+  <button id="add-new-trip-button">Add a new trip</a>
+  <table id="trips-table"></table>
 </body>
 
 </html>

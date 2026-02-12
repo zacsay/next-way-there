@@ -81,3 +81,11 @@
     color: grey;
     border-left-color: lightgrey;
 }
+
+#confirm-cancel-buttons-div {
+    padding-top: 1cap;
+}
+
+#confirm-cancel-buttons-div>* {
+    margin-bottom: 0.5cap;
+}
