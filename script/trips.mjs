@@ -63,7 +63,7 @@ function addOptionRow(tripAdderWindow) {
     const firstStopSelectButton = tripAdderWindow.document.createElement("button");
     const intermediateStopsHiddenInput = tripAdderWindow.document.createElement("input");
     const intermediateStopsCount = tripAdderWindow.document.createTextNode("0");
-    const intermediateStopsText = tripAdderWindow.document.createTextNode(" intermediate stops")
+    const intermediateStopsText = tripAdderWindow.document.createTextNode(" intermediate stops");
     const intermediateStopsButton = tripAdderWindow.document.createElement("button");
     const lastStopIdLabel = tripAdderWindow.document.createElement("code");
     const lastStopSelectButton = tripAdderWindow.document.createElement("button");
@@ -82,10 +82,10 @@ function addOptionRow(tripAdderWindow) {
         stopSelect.innerText = "Select a stop";
         stopSelect.setAttribute("class", "stop-selector");
     }
-    
+
     // Not looping these two because they will need to be updated separately eventually.
-    firstStopIdLabel.innerText = "---"
-    lastStopIdLabel.innerText = "---"
+    firstStopIdLabel.innerText = "---";
+    lastStopIdLabel.innerText = "---";
 
     intermediateStopsHiddenInput.setAttribute("type", "hidden");
 
@@ -103,7 +103,14 @@ function addOptionRow(tripAdderWindow) {
             }
         });
     });
-    intermediateStopsButton.addEventListener("click", (_) => configureIntermediateStops(tripAdderWindow, newRowElement));
+    intermediateStopsButton.addEventListener("click", (_) => {
+        configureIntermediateStops(tripAdderWindow, newRowElement).then(value => {
+            if (value !== null) {
+                intermediateStopsHiddenInput.value = JSON.stringify(value);
+                intermediateStopsCount.innerText = value;
+            }
+        });
+    });
     lastStopSelectButton.addEventListener("click", (_) => {
         selectStop(tripAdderWindow).then(value => {
             if (value !== null) {
@@ -117,7 +124,7 @@ function addOptionRow(tripAdderWindow) {
     // Add inputs to cells
     startWalkingTimeCell.appendChild(startWalkingTimeInput);
     firstStopCell.appendChild(firstStopIdLabel);
-    appendBRElementAsChild(firstStopCell)
+    appendBRElementAsChild(firstStopCell);
     firstStopCell.appendChild(firstStopSelectButton);
     intermediateStopsCell.appendChild(intermediateStopsHiddenInput);
     intermediateStopsCell.appendChild(intermediateStopsCount);
@@ -143,14 +150,61 @@ function addOptionRow(tripAdderWindow) {
 }
 
 /**
- * Handles the functionality for adding/editing intermediate stops
+ * Handles the functionality for adding/editing intermediate stops.
+ * The user can also change the start and end stops from this screen.
+ * Start and end stop changes are saved directly to the main table row.
  * 
  * @param {Window} tripAdderWindow - The window hosting the trip adder
  * @param {HTMLTableRowElement} row - The table row to configure intermediate stops for
+ * @returns {Promise<object>} - Intermediate stop data
  */
 async function configureIntermediateStops(tripAdderWindow, row) {
-    const intermediateStopsWindow = await activateEditor(tripAdderWindow, "add-intermediate-stops.html");
+    return new Promise(async (resolve, reject) => {
+        try {
+            const intermediateStopsWindow = await activateEditor(tripAdderWindow, "add-intermediate-stops.html");
 
+            const startStopRow = intermediateStopsWindow.document.getElementById("start-stop-row");
+            const startStopIdElementIntermediateStopsWindow = startStopRow.querySelector("td>code");
+            const startStopIdElementMainWindow = row.querySelector("td:nth-of-type(2)>code");
+
+            const endStopRow = intermediateStopsWindow.document.getElementById("end-stop-row");
+            const endStopIdElementIntermediateStopsWindow = endStopRow.querySelector("td>code");
+            const endStopIdElementMainWindow = row.querySelector("td:nth-of-type(4)>code");
+
+            // Give the buttons functionality
+            startStopRow.querySelector("td>button").addEventListener("click", (_) => updateStartStop());
+            endStopRow.querySelector("td>button").addEventListener("click", (_) => updateEndStop());
+
+            intermediateStopsWindow.document.getElementById("save-exit-button").addEventListener("click", (_) => saveAndExit());
+
+            // Show the correct stop ids on load
+            startStopIdElementIntermediateStopsWindow.innerText = startStopIdElementMainWindow.innerText;
+            endStopIdElementIntermediateStopsWindow.innerText = endStopIdElementMainWindow.innerText;
+
+            function updateStartStop() {
+                selectStop(intermediateStopsWindow).then(value => {
+                    if (value !== null) {
+                        startStopIdElementIntermediateStopsWindow.innerText = value;
+                        startStopIdElementMainWindow.innerText = value;
+                    }
+                });
+            }
+            function updateEndStop() {
+                selectStop(intermediateStopsWindow).then(value => {
+                    if (value !== null) {
+                        endStopIdElementIntermediateStopsWindow.innerText = value;
+                        endStopIdElementMainWindow.innerText = value;
+                    }
+                });
+            }
+
+            function saveAndExit() {
+                // Note: this function does NOT save data yet (TODO)
+                intermediateStopsWindow.close();
+                resolve(null);
+            }
+        } catch { reject(); }
+    });
 }
 
 /**
@@ -188,8 +242,8 @@ async function selectStop(parentWindow) {
 
                 readFromDatabase("stops", stopId).then(updateStopConfirmation);
             }
-            function getStopByStopCode() { stopSelectWindow.alert("Sorry! Not implemented yet") }
-            function getStopByName() { stopSelectWindow.alert("Sorry! Not implemented yet") }
+            function getStopByStopCode() { stopSelectWindow.alert("Sorry! Not implemented yet"); }
+            function getStopByName() { stopSelectWindow.alert("Sorry! Not implemented yet"); }
 
             function updateStopConfirmation(stop) {
                 const stopIdText = stopSelectWindow.document.getElementById("selected-stop-id");
@@ -199,17 +253,17 @@ async function selectStop(parentWindow) {
                 if (stop) {
                     stopIdText.innerText = stop.stop_id;
                     stopNameText.innerText = stop.stop_name;
-                    confirmButton.removeAttribute("disabled")
+                    confirmButton.removeAttribute("disabled");
                 } else {
-                    stopIdText.innerText = "---"
-                    stopNameText.innerText = "Stop not found"
-                    confirmButton.setAttribute("disabled", "")
+                    stopIdText.innerText = "---";
+                    stopNameText.innerText = "Stop not found";
+                    confirmButton.setAttribute("disabled", "");
                 }
             }
 
-            function confirmSelectedStop() { 
+            function confirmSelectedStop() {
                 resolve(stopSelectWindow.document.getElementById("selected-stop-id").innerText);
-                stopSelectWindow.close()
+                stopSelectWindow.close();
             }
             function cancel() {
                 resolve(null);
