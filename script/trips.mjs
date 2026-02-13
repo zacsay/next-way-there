@@ -159,6 +159,18 @@ function addOptionRow(tripAdderWindow) {
  * @returns {Promise<object>} - Intermediate stop data
  */
 async function configureIntermediateStops(tripAdderWindow, row) {
+    /**
+     * Enum for interchange types.
+     * The text defined here is displayed to the user.
+     * 
+     * @enum {string}
+     * @readonly
+     */
+    const InterchangeType = {
+        SINGLE_STOP: "Single-stop",
+        MULTI_STOP: "Multi-stop"
+    };
+
     return new Promise(async (resolve, reject) => {
         try {
             const intermediateStopsWindow = await activateEditor(tripAdderWindow, "add-intermediate-stops.html");
@@ -174,6 +186,8 @@ async function configureIntermediateStops(tripAdderWindow, row) {
             // Give the buttons functionality
             startStopRow.querySelector("td>button").addEventListener("click", (_) => updateStartStop());
             endStopRow.querySelector("td>button").addEventListener("click", (_) => updateEndStop());
+
+            startStopRow.nextElementSibling.querySelector("button").addEventListener("click", addStopRow);
 
             intermediateStopsWindow.document.getElementById("save-exit-button").addEventListener("click", (_) => saveAndExit());
 
@@ -196,6 +210,87 @@ async function configureIntermediateStops(tripAdderWindow, row) {
                         endStopIdElementMainWindow.innerText = value;
                     }
                 });
+            }
+
+            /**
+             * Adds a stop row in the appropriate place
+             * 
+             * @param {MouseEvent} ev - The event which triggered the addition of the stop row
+             */
+            function addStopRow(ev) {
+                /**
+                 * The targeted row for the addition
+                 * 
+                 * @type {HTMLTableRowElement}
+                 */
+                const targetRow = ev.target.parentElement.parentElement;
+
+
+                const interchangeTypeRow = intermediateStopsWindow.document.createElement("tr");
+
+                const interchangeTypeHeadingCell = intermediateStopsWindow.document.createElement("th");
+                const interchangeTypeTextCell = intermediateStopsWindow.document.createElement("td");
+                const interchangeTypeToggleCell = intermediateStopsWindow.document.createElement("td");
+
+                interchangeTypeHeadingCell.setAttribute("scope", "row");
+
+                const interchangeTypeHeading = intermediateStopsWindow.document.createTextNode("Interchange type");
+                const interchangeTypeText = intermediateStopsWindow.document.createTextNode(InterchangeType.SINGLE_STOP);
+                const interchangeTypeToggle = intermediateStopsWindow.document.createElement("button");
+
+                interchangeTypeToggle.innerText = "Change interchange type";
+                interchangeTypeToggle.setAttribute("type", "button");
+
+                interchangeTypeHeadingCell.appendChild(interchangeTypeHeading);
+                interchangeTypeTextCell.appendChild(interchangeTypeText);
+                interchangeTypeToggleCell.appendChild(interchangeTypeToggle);
+
+                interchangeTypeRow.append(interchangeTypeHeadingCell, interchangeTypeTextCell, interchangeTypeToggleCell);
+
+                const stopRow = intermediateStopsWindow.document.createElement("tr");
+
+                const stopHeadingCell = intermediateStopsWindow.document.createElement("th");
+                const stopTextCell = intermediateStopsWindow.document.createElement("td");
+                const stopChangeCell = intermediateStopsWindow.document.createElement("td");
+
+                stopHeadingCell.setAttribute("scope", "row");
+
+                const stopHeading = intermediateStopsWindow.document.createTextNode("Intermediate stop");
+                const stopText = intermediateStopsWindow.document.createElement("code");
+                const stopChangeButton = intermediateStopsWindow.document.createElement("button");
+
+                stopText.innerText = "---";
+                stopChangeButton.innerText = "Change";
+                stopChangeButton.setAttribute("type", "button");
+
+                stopChangeButton.addEventListener("click", (_) => {
+                    selectStop(intermediateStopsWindow).then(value => {
+                        if (value !== null) {
+                            stopText.innerText = value;
+                        }
+                    });
+                });
+
+                stopHeadingCell.appendChild(stopHeading);
+                stopTextCell.appendChild(stopText);
+                stopChangeCell.appendChild(stopChangeButton);
+
+                stopRow.append(stopHeadingCell, stopTextCell, stopChangeCell);
+
+                const addStopRowRow = intermediateStopsWindow.document.createElement("tr");
+                const addStopRowCell = intermediateStopsWindow.document.createElement("td");
+                const addStopRowButton = intermediateStopsWindow.document.createElement("button");
+
+                addStopRowCell.setAttribute("colspan", "3");
+
+                addStopRowButton.setAttribute("type", "button");
+                addStopRowButton.innerText = "Add intermediate stop";
+                addStopRowButton.addEventListener("click", addStopRow);
+
+                addStopRowCell.appendChild(addStopRowButton);
+                addStopRowRow.appendChild(addStopRowCell);
+
+                targetRow.after(interchangeTypeRow, stopRow, addStopRowRow);
             }
 
             function saveAndExit() {
